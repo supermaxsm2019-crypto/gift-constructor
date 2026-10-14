@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Панель керування каталогом — Конструктор подарунків</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+	<!-- Головний хедер панелі керування -->
+	<header class="admin-header">
+		<div class="header-container">
+			<div class="header-brand">
+				<a href="index.html" class="brand-link" title="Повернутися на головний сайт">
+					<span class="brand-icon">🎁</span>
+					<div class="brand-text">
+						<span class="brand-title">Gift Constructor</span>
+						<span class="brand-badge">Admin Panel</span>
+					</div>
+				</a>
+			</div>
+
+			<div class="header-status">
+				<span class="storage-indicator pulse" id="storageIndicator" title="Стан збереження даних">
+					<span class="indicator-dot"></span>
+					<span class="indicator-text">Дані синхронізовано (LocalStorage)</span>
+				</span>
+			</div>
+
+			<div class="header-actions">
+				<button type="button" class="btn btn-primary" id="openAddModalBtn" aria-label="Додати новий подарунок">
+					<span class="btn-icon">➕</span>
+					<span>Додати подарунок</span>
+				</button>
+				<a href="index.html" class="btn btn-outline" title="Перейти до клієнтської частини сайту">
+					<span class="btn-icon">🏠</span>
+					<span>На головний сайт</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<!-- Основний робочий простір -->
+	<main class="admin-main">
+		<div class="admin-container">
+
+			<!-- Верхня інформаційна панель та статистика -->
+			<section class="metrics-section" aria-label="Статистика каталогу">
+				<div class="metric-card">
+					<div class="metric-icon bg-indigo">📦</div>
+					<div class="metric-info">
+						<span class="metric-label">Всього подарунків</span>
+						<strong class="metric-value" id="totalGiftsCount">0</strong>
+						<span class="metric-sub" id="activeGiftsSub">Активні позиції в каталозі</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon bg-emerald">🏷️</div>
+					<div class="metric-info">
+						<span class="metric-label">Цінові категорії</span>
+						<div class="metric-tiers-badges" id="tierBreakdownBadges">
+							<span class="tier-pill tier-mini" title="Mini (50-300 грн)">Mini: <strong id="countMini">0</strong></span>
+							<span class="tier-pill tier-standard" title="Standard (301-900 грн)">Std: <strong id="countStandard">0</strong></span>
+							<span class="tier-pill tier-optimal" title="Optimal (901-2400 грн)">Opt: <strong id="countOptimal">0</strong></span>
+							<span class="tier-pill tier-premium" title="Premium (від 2500 грн)">Prem: <strong id="countPremium">0</strong></span>
+						</div>
+						<span class="metric-sub">Охоплення всіх бюджетів</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon bg-amber">💰</div>
+					<div class="metric-info">
+						<span class="metric-label">Діапазон цін</span>
+						<strong class="metric-value" id="priceRangeValue">0 – 0 грн</strong>
+						<span class="metric-sub" id="avgPriceSub">Сер. вартість: 0 грн</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon bg-rose">⚡</div>
+					<div class="metric-info">
+						<span class="metric-label">Керування сховищем</span>
+						<div class="storage-quick-actions">
+							<button type="button" class="btn-micro" id="exportJsonBtn" title="Завантажити копію бази подарунків у JSON">
+								📥 Експорт
+							</button>
+							<label class="btn-micro" title="Завантажити базу з файлу JSON" style="cursor: pointer;">
+								📤 Імпорт
+								<input type="file" id="importJsonInput" accept=".json" style="display: none;">
+							</label>
+							<button type="button" class="btn-micro btn-micro-danger" id="resetCatalogBtn" title="Скинути каталог до стандартних значень">
+								🔄 Скинути
+							</button>
+						</div>
+						<span class="metric-sub">Автоматичне збереження</span>
+					</div>
+				</div>
+			</section>
+
+			<!-- Панель фільтрів, пошуку та сортування -->
+			<section class="controls-panel" aria-label="Фільтри каталогу">
+				<div class="search-box">
+					<span class="search-icon">🔍</span>
+					<input type="text" id="searchInput" placeholder="Пошук за назвою, описом, бейджем або складом..." autocomplete="off">
+					<button type="button" id="clearSearchBtn" class="clear-btn" title="Очистити пошук" style="display: none;">✕</button>
+				</div>
+
+				<div class="filters-row">
+					<div class="filter-group">
+						<label for="filterRecipient">👤 Отримувач:</label>
+						<select id="filterRecipient">
+							<option value="">Всі отримувачі</option>
+							<option value="Мама">Мама</option>
+							<option value="Тато">Тато</option>
+							<option value="Сестра">Сестра</option>
+							<option value="Брат">Брат</option>
+							<option value="Всі">Всі (Універсальні)</option>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<label for="filterOccasion">🎉 Подія:</label>
+						<select id="filterOccasion">
+							<option value="">Всі події</option>
+							<option value="ДН">День Народження (ДН)</option>
+							<option value="НР">Новий Рік (НР)</option>
+							<option value="8Б">8 Березня (8Б)</option>
+							<option value="Весілля">Весілля</option>
+							<option value="Всі">Будь-яка подія</option>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<label for="filterTier">💎 Рівень бюджету:</label>
+						<select id="filterTier">
+							<option value="">Всі категорії</option>
+							<option value="mini">Mini (50 – 300 грн)</option>
+							<option value="standard">Standard (301 – 900 грн)</option>
+							<option value="optimal">Optimal (901 – 2 400 грн)</option>
+							<option value="premium">Premium (від 2 500 грн)</option>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<label for="sortBySelect">↕️ Сортування:</label>
+						<select id="sortBySelect">
+							<option value="newest">Спочатку новіші</option>
+							<option value="price-asc">Ціна: від найдешевшої</option>
+							<option value="price-desc">Ціна: від найдорожчої</option>
+							<option value="title-asc">Назва: за алфавітом (А-Я)</option>
+							<option value="rating-desc">Рейтинг: від найвищого</option>
+						</select>
+					</div>
+
+					<div class="view-mode-toggle" role="group" aria-label="Перемикач вигляду">
+						<button type="button" class="view-btn active" id="tableViewBtn" title="Табличний вигляд">
+							📑 Таблиця
+						</button>
+						<button type="button" class="view-btn" id="gridViewBtn" title="Сітка карток">
+							🗂️ Картки
+						</button>
+					</div>
+				</div>
+
+				<div class="filters-meta">
+					<div class="results-badge" id="resultsCountBadge">
+						Відображено: <strong>0</strong> з <strong>0</strong> подарунків
+					</div>
+					<button type="button" class="btn-link" id="resetFiltersBtn" style="display: none;">
+						Скинути фільтри ✕
+					</button>
+				</div>
+			</section>
+
+			<!-- Область виведення каталогу -->
+			<section class="catalog-section" aria-label="Список подарунків">
+				
+				<!-- 1. Табличний вигляд -->
+				<div class="table-responsive" id="tableContainer">
+					<table class="catalog-table">
+						<thead>
+							<tr>
+								<th style="width: 72px;">Фото</th>
+								<th>Подарунок та опис</th>
+								<th style="width: 140px;">Отримувач / Подія</th>
+								<th style="width: 110px;">Категорія</th>
+								<th style="width: 160px;">Склад набору</th>
+								<th style="width: 120px;">Ціна</th>
+								<th style="width: 110px;">Статус</th>
+								<th style="width: 130px; text-align: center;">Дії</th>
+							</tr>
+						</thead>
+						<tbody id="catalogTableBody">
+							<!-- Динамічно наповнюється JS -->
+						</tbody>
+					</table>
+				</div>
+
+				<!-- 2. Сітка карток -->
+				<div class="cards-grid" id="cardsGridContainer" style="display: none;">
+					<!-- Динамічно наповнюється JS -->
+				</div>
+
+				<!-- Порожній стан пошуку -->
+				<div class="empty-results-box" id="emptyResultsBox" style="display: none;">
+					<div class="empty-icon">🔍</div>
+					<h3>Подарунків не знайдено</h3>
+					<p>За обраними фільтрами чи пошуковим запитом немає жодного елемента.</p>
+					<button type="button" class="btn btn-secondary" id="clearSearchEmptyBtn">
+						Скинути параметри пошуку
+					</button>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<!-- Модальне вікно: Додавання / Редагування подарунка -->
+	<div class="modal-overlay" id="giftModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display: none;">
+		<div class="modal-card">
+			<div class="modal-header">
+				<div class="modal-title-wrap">
+					<h2 class="modal-title" id="modalTitle">✨ Додати новий подарунок</h2>
+					<p class="modal-subtitle">Заповніть поля форми. Всі зміни автоматично зберігаються в каталозі.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeModalBtn" aria-label="Закрити вікно">✕</button>
+			</div>
+
+			<div class="modal-body">
+				<!-- Двоколонковий макет: Форма ліворуч, Живе прев'ю праворуч -->
+				<div class="modal-grid">
+					
+					<!-- Ліва колонка: Форма вводу -->
+					<form id="giftEditForm" class="modal-form" novalidate>
+						<input type="hidden" id="giftIdInput" value="">
+
+						<div class="form-row">
+							<div class="form-field full-width">
+								<label for="giftTitleInput" class="required-label">Назва подарунка:</label>
+								<input type="text" id="giftTitleInput" placeholder="Наприклад: Авторський СПА-бокс релаксу" required>
+								<span class="field-error-msg" id="giftTitleError">⚠️ Вкажіть назву подарунка</span>
+							</div>
+						</div>
+
+						<div class="form-row two-cols">
+							<div class="form-field">
+								<label for="giftRecipientSelect" class="required-label">Отримувач:</label>
+								<select id="giftRecipientSelect" required>
+									<option value="Мама">Мама</option>
+									<option value="Тато">Тато</option>
+									<option value="Сестра">Сестра</option>
+									<option value="Брат">Брат</option>
+									<option value="Всі">Всі (Універсальний)</option>
+									<option value="Друг">Друг / Подруга</option>
+									<option value="Колега">Колега</option>
+								</select>
+							</div>
+
+							<div class="form-field">
+								<label for="giftOccasionSelect" class="required-label">Подія / Свято:</label>
+								<select id="giftOccasionSelect" required>
+									<option value="ДН">День Народження (ДН)</option>
+									<option value="НР">Новий Рік (НР)</option>
+									<option value="8Б">8 Березня (8Б)</option>
+									<option value="Весілля">Весілля</option>
+									<option value="Всі">Будь-яка подія</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-row three-cols">
+							<div class="form-field">
+								<label for="giftPriceInput" class="required-label">Ціна (грн):</label>
+								<input type="number" id="giftPriceInput" min="1" step="1" placeholder="500" required>
+								<span class="field-error-msg" id="giftPriceError">⚠️ Вкажіть коректну ціну (> 0)</span>
+							</div>
+
+							<div class="form-field">
+								<label for="giftTierSelect">Категорія (Tier):</label>
+								<select id="giftTierSelect">
+									<option value="mini">Mini (50 – 300 грн)</option>
+									<option value="standard">Standard (301 – 900 грн)</option>
+									<option value="optimal">Optimal (901 – 2 400 грн)</option>
+									<option value="premium">Premium (від 2 500 грн)</option>
+								</select>
+							</div>
+
+							<div class="form-field">
+								<label for="giftBadgeInput">Бейдж / Позначка:</label>
+								<input type="text" id="giftBadgeInput" placeholder="Наприклад: Хіт продажів">
+							</div>
+						</div>
+
+						<div class="form-row two-cols">
+							<div class="form-field">
+								<label for="giftBudgetMinInput">Мін. бюджет (грн):</label>
+								<input type="number" id="giftBudgetMinInput" min="1" placeholder="50">
+							</div>
+							<div class="form-field">
+								<label for="giftBudgetMaxInput">Макс. бюджет (грн):</label>
+								<input type="number" id="giftBudgetMaxInput" min="1" placeholder="300">
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="form-field full-width">
+								<label for="giftImageInput">URL фотографії:</label>
+								<div class="input-with-presets">
+									<input type="url" id="giftImageInput" placeholder="https://images.unsplash.com/...">
+								</div>
+								<!-- Швидкі пресети зображень для легкості додавання -->
+								<div class="image-presets-wrap">
+									<span class="presets-label">Швидкі фото:</span>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=600&q=80">🍫 Шоколад</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80">🕯️ СПА</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80">⌚ Годинник</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&q=80">💌 Листівка & Чай</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1582139329536-e7284fece509?w=600&q=80">🔑 Брелок</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1543255006-d6395b6f1171?w=600&q=80">🍪 Пряник</button>
+									<button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80">👘 Шовк & Парфум</button>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-row two-cols">
+							<div class="form-field">
+								<label for="giftAvailabilitySelect">Наявність:</label>
+								<select id="giftAvailabilitySelect">
+									<option value="В наявності">В наявності</option>
+									<option value="Під замовлення">Під замовлення</option>
+									<option value="Очікується">Очікується</option>
+								</select>
+							</div>
+
+							<div class="form-field">
+								<label for="giftRatingInput">Рейтинг (від 1.0 до 5.0):</label>
+								<input type="number" id="giftRatingInput" min="1" max="5" step="0.1" value="4.9">
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="form-field full-width">
+								<label for="giftDescriptionInput" class="required-label">Детальний опис:</label>
+								<textarea id="giftDescriptionInput" rows="3" placeholder="Опишіть подарунок, його переваги та емоційну цінність..." required></textarea>
+								<span class="field-error-msg" id="giftDescriptionError">⚠️ Введіть опис подарунка</span>
+							</div>
+						</div>
+
+						<!-- Динамічний блок: Складові набору (Items) -->
+						<div class="form-items-section">
+							<div class="items-section-header">
+								<div>
+									<label class="items-title">📦 Склад набору / Елементи подарунка:</label>
+									<p class="items-hint">Додайте складові частини із зазначенням орієнтовної вартості</p>
+								</div>
+								<button type="button" class="btn btn-secondary btn-sm" id="addItemRowBtn">
+									➕ Додати позицію
+								</button>
+							</div>
+
+							<div class="items-list-container" id="itemsListContainer">
+								<!-- Сюди динамічно генеруються рядки елементів -->
+							</div>
+
+							<div class="items-sum-bar">
+								<span>Сума складових: <strong id="itemsSumDisplay">0 грн</strong></span>
+								<span id="itemsSumComparisonBadge" class="sum-badge"></span>
+							</div>
+						</div>
+					</form>
+
+					<!-- Права колонка: Інтерактивне живе прев'ю картки -->
+					<aside class="modal-preview-aside">
+						<div class="preview-header">
+							<span>👁️ Живе прев'ю картки на сайті:</span>
+							<span class="preview-tag">Оновлюється миттєво</span>
+						</div>
+
+						<div class="preview-card-wrap">
+							<div class="gift-card preview-gift-card" id="livePreviewCard">
+								<div class="card-badge" id="prevBadge">Дрібничка до свята</div>
+								<div class="card-img-wrap">
+									<img src="https://images.unsplash.com/photo-1543255006-d6395b6f1171?w=600&q=80" alt="Прев'ю подарунка" id="prevImage">
+								</div>
+								<div class="card-body">
+									<div class="card-target-tag" id="prevTarget">👤 Для: <strong>Мама</strong> • День Народження</div>
+									<h3 class="card-title" id="prevTitle">Назва подарунка</h3>
+									<p class="card-description" id="prevDescription">Детальний опис подарунка з'явиться тут під час заповнення форми.</p>
+									
+									<div class="preview-items-box" id="prevItemsBox" style="display: none;">
+										<div class="prev-items-title">📦 Склад набору:</div>
+										<ul class="card-items-list" id="prevItemsList"></ul>
+									</div>
+
+									<div class="card-footer">
+										<div class="card-price">Реальна вартість: <strong id="prevPrice">0 грн</strong></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</aside>
+
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<div class="modal-footer-left">
+					<span class="auto-save-hint" id="draftSaveHint">💾 Чернетку збережено автоматично</span>
+				</div>
+				<div class="modal-footer-right">
+					<button type="button" class="btn btn-outline" id="cancelModalBtn">Скасувати</button>
+					<button type="submit" form="giftEditForm" class="btn btn-primary" id="saveGiftBtn">
+						<span class="btn-icon">💾</span>
+						<span id="saveBtnText">Зберегти подарунок</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Модальне вікно: Підтвердження видалення -->
+	<div class="modal-overlay" id="deleteConfirmOverlay" role="dialog" aria-modal="true" style="display: none;">
+		<div class="modal-card modal-card-sm">
+			<div class="modal-header">
+				<h3 class="modal-title text-danger">🗑️ Видалити цей подарунок?</h3>
+				<button type="button" class="modal-close-btn" id="closeDeleteModalBtn">✕</button>
+			</div>
+			<div class="modal-body">
+				<p>Ви збираєтеся видалити подарунок: <strong id="deleteGiftTitle">...</strong></p>
+				<p class="modal-warn-text">Цю дію буде збережено у LocalStorage. Подарунок більше не відображатиметься в каталозі та конструкторі.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" id="cancelDeleteBtn">Скасувати</button>
+				<button type="button" class="btn btn-danger" id="confirmDeleteBtn">Так, видалити</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Модальне вікно: Підтвердження скидання каталогу -->
+	<div class="modal-overlay" id="resetConfirmOverlay" role="dialog" aria-modal="true" style="display: none;">
+		<div class="modal-card modal-card-sm">
+			<div class="modal-header">
+				<h3 class="modal-title text-warning">🔄 Скинути каталог до початкового?</h3>
+				<button type="button" class="modal-close-btn" id="closeResetModalBtn">✕</button>
+			</div>
+			<div class="modal-body">
+				<p>Ви впевнені, що хочете скинути всі подарунки до стандартної бази?</p>
+				<p class="modal-warn-text">Усі додані вручну або відредаговані подарунки буде замінено на 30 оригінальних подарунків з файлу gifts.json.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" id="cancelResetBtn">Скасувати</button>
+				<button type="button" class="btn btn-warning" id="confirmResetBtn">Скинути до стандартних</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Контейнер для спливаючих сповіщень (Toasts) -->
+	<div class="toasts-container" id="toastsContainer" aria-live="polite"></div>
+
+	<!-- Підключення основного сценарію панелі керування -->
+	<script src="admin.js"></script>
+</body>
+
+</html>
