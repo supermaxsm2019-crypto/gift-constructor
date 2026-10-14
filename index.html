@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Конструктор подарунків</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<!-- Хедер з навігацією -->
+	<header id="siteHeader">
+		<div class="header-container">
+			<a href="#hero" class="logo">🎁 Gift Constructor</a>
+			<nav class="nav-links">
+				<a href="#hero" class="nav-link">Головна</a>
+				<a href="#constructor" class="nav-link">Конструктор</a>
+				<a href="#popular-gifts" class="nav-link">Подарунки</a>
+				<a href="#where-to-buy" class="nav-link">Де купити</a>
+				<a href="#faq" class="nav-link">FAQ</a>
+				<a href="admin.html" class="nav-link nav-admin-link">⚙️ Адмінка</a>
+				<a href="#constructor" class="nav-btn">Зібрати подарунок</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<!-- 1. Hero Секція -->
+		<section class="hero-section" id="hero">
+			<div class="hero-container">
+				<div class="hero-content">
+					<div class="hero-badge">✨ Розумний помічник для свят</div>
+					<h1 class="hero-title">Знайдіть ідеальний подарунок за лічені секунди</h1>
+					<p class="hero-description">
+						Не знаєте, чим порадувати близьких? Наш онлайн-конструктор швидко підбере найкращу ідею
+						подарунка для мами, тата, сестри або брата відповідно до свята та вашого бюджету.
+					</p>
+					<div class="hero-buttons">
+						<a href="#constructor" class="btn-primary">🎁 Підібрати подарунок</a>
+						<a href="#where-to-buy" class="btn-secondary">🛍️ Де купити</a>
+					</div>
+					<div class="hero-stats">
+						<div class="stat-item">
+							<strong>30+</strong>
+							<span>готових ідей</span>
+						</div>
+						<div class="stat-item">
+							<strong>100%</strong>
+							<span>безкоштовно</span>
+						</div>
+						<div class="stat-item">
+							<strong>&lt; 1 хв</strong>
+							<span>на підбір</span>
+						</div>
+					</div>
+				</div>
+				<div class="hero-image-wrapper">
+					<img src="assets/images/celebration.jpg" alt="Святковий подарунок" class="hero-img">
+					<div class="hero-floating-card">
+						<span class="floating-icon">🎉</span>
+						<div>
+							<strong>Святковий настрій</strong>
+							<p>Даруйте радість близьким</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 2. Секція Конструктора (НЕЗМІННА) -->
+		<section class="container" id="constructor">
+			<h1>Конструктор подарунків</h1>
+			<p class="subtitle">Зберіть подарунок для близької людини</p>
+
+			<!-- Форма підбору подарунка -->
+			<form id="giftForm" novalidate>
+				<div class="form-group">
+					<label for="recipientSelect">Отримувач:</label>
+					<select id="recipientSelect" required>
+						<option value="">-- Оберіть отримувача --</option>
+						<option value="Мама">Мама</option>
+						<option value="Тато">Тато</option>
+						<option value="Сестра">Сестра</option>
+						<option value="Брат">Брат</option>
+					</select>
+					<span class="field-msg invalid-msg">⚠️ Будь ласка, оберіть отримувача зі списку</span>
+					<span class="field-msg valid-msg">✓ Отримувача обрано</span>
+				</div>
+
+				<div class="form-group">
+					<label for="occasionSelect">Подія:</label>
+					<select id="occasionSelect" required>
+						<option value="">-- Оберіть подію --</option>
+						<option value="ДН">День Народження (ДН)</option>
+						<option value="НР">Новий Рік (НР)</option>
+						<option value="8Б">8 Березня (8Б)</option>
+						<option value="Весілля">Весілля</option>
+					</select>
+					<span class="field-msg invalid-msg">⚠️ Будь ласка, оберіть подію або свято</span>
+					<span class="field-msg valid-msg">✓ Подію обрано</span>
+				</div>
+
+				<div class="form-group">
+					<label for="budgetInput">Бюджет (грн):</label>
+					<input type="number" id="budgetInput" placeholder="Вкажіть бюджет (наприклад: 500)" min="1" step="1"
+						required>
+					<span class="field-msg invalid-msg">⚠️ Вкажіть коректний бюджет (від 1 грн)</span>
+					<span class="field-msg valid-msg">✓ Бюджет вказано</span>
+				</div>
+
+				<div class="form-actions-row">
+					<button type="submit" id="submitBtn">Зібрати</button>
+					<button type="button" id="resetBtn" class="btn-reset">Скинути</button>
+				</div>
+			</form>
+
+			<!-- Блок помилки -->
+			<div id="errorMessage" class="error-box" style="display: none;">
+				⚠️ Будь ласка, заповніть усі поля форми!
+			</div>
+
+			<!-- Блок результату (один варіант подарунка) -->
+			<div id="rezultatContainer" class="results-wrapper empty-state">
+				<div class="empty-state-content">
+					<h3>🎁 Подарунок не зібрано</h3>
+					<p>Оберіть отримувача, подію та вкажіть бюджет у формі вище, після чого натисніть кнопку «Зібрати».
+					</p>
+				</div>
+				<div id="resultCard" class="result-card" style="display: none;"></div>
+			</div>
+		</section>
+
+		<!-- 3. Секція Карток Подарунків (в одному ряду однакової висоти) -->
+		<section class="popular-gifts-section" id="popular-gifts">
+			<div class="section-header">
+				<span class="section-badge">✨ Приклади наборів</span>
+				<h2>Картки популярних подарунків</h2>
+				<p class="section-subtitle">
+					Усі картки в одному ряду мають однакову висоту незалежно від довжини опису, а ціни вирівняні по
+					нижньому краю без виходу тексту за межі.
+				</p>
+			</div>
+
+			<div class="gifts-grid">
+				<!-- Картка 1: Бюджетна дрібничка (до 100 грн) -->
+				<div class="gift-card">
+					<div class="card-badge">Дрібничка (до 100 грн)</div>
+					<img src="https://images.unsplash.com/photo-1543255006-d6395b6f1171?w=600&q=80"
+						alt="Святковий імбирний пряник">
+					<div class="card-body">
+						<div class="card-target-tag">👤 Для: <strong>Всі</strong> • Новий Рік</div>
+						<h3 class="card-title">Святковий імбирний пряник & Крафтова листівка</h3>
+						<p class="card-description">
+							Ніжний розписний медово-імбирний пряник ручної роботи та авторська крафтова листівка із
+							запашним саше карпатського чаю. Теплий душевний комплімент при бюджеті до 100 грн.
+						</p>
+						<div class="card-footer">
+							<div class="card-price">Ціна: <strong>95 грн</strong></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Картка 2: Оптимальний набір (довгий опис для тесту однакової висоти) -->
+				<div class="gift-card">
+					<div class="card-badge">СПА & Догляд</div>
+					<img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80"
+						alt="СПА-набір релаксу">
+					<div class="card-body">
+						<div class="card-target-tag">👤 Для: <strong>Мама</strong> • 8 Березня</div>
+						<h3 class="card-title">СПА-набір релаксу та органічного догляду</h3>
+						<p class="card-description">
+							Ексклюзивний подарунковий бокс преміум-класу для повноцінного домашнього релаксу та
+							відновлення сил. Включає велику ароматичну соєву свічку з дерев'яним ґнотом, органічну
+							натуральну косметику ручної роботи, заспокійливий трав'яний чай із карпатських трав, бальзам
+							для губ, живильний крем для рук, шовкову маску для сну та персональну листівку з
+							каліграфічним підписом.
+						</p>
+						<div class="card-footer">
+							<div class="card-price">Ціна: <strong>1 350 грн</strong></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Картка 3: Розкішний набір (від 2 500 грн) -->
+				<div class="gift-card">
+					<div class="card-badge">Преміум (від 2 500 грн)</div>
+					<img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80"
+						alt="Шовковий халат та нішевий парфум">
+					<div class="card-body">
+						<div class="card-target-tag">👤 Для: <strong>Сестра</strong> • Весілля</div>
+						<h3 class="card-title">Шовковий халат-кімоно & Нішевий вечірній парфум</h3>
+						<p class="card-description">
+							Розкішний набір найвищого ґатунку: халат-кімоно із 100% натурального шовку Mulberry з
+							витонченим мереживом та флакон авторського нішевого парфуму Eau de Parfum (50 мл) у
+							презентаційному футлярі на магнітному замку.
+						</p>
+						<div class="card-footer">
+							<div class="card-price">Ціна: <strong>2 900 грн</strong></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 4. Where to Buy (Де придбати) Секція -->
+		<section class="where-to-buy-section" id="where-to-buy">
+			<div class="section-header">
+				<span class="section-badge">🛍️ Партнери & Локації</span>
+				<h2>Де придбати подарунки?</h2>
+				<p class="section-subtitle">
+					Обрали ідею в конструкторі? Ось перевірені місця, де можна вигідно придбати все необхідне зі швидкою
+					доставкою по Україні.
+				</p>
+			</div>
+
+			<div class="where-to-buy-grid">
+				<div class="buy-card">
+					<div class="buy-card-icon">🛒</div>
+					<h3>Популярні маркетплейси</h3>
+					<p>Ідеально для гаджетів, аксесуарів, книг та подарункових сертифікатів з доставкою у поштомати або
+						кур'єром.</p>
+					<ul class="buy-features">
+						<li>✓ Rozetka, Prom, Epicentr</li>
+						<li>✓ Зручна оплата карткою або при отриманні</li>
+						<li>✓ Доставка по всій Україні за 1–2 дні</li>
+					</ul>
+					<span class="buy-tag">Швидка доставка</span>
+				</div>
+
+				<div class="buy-card featured">
+					<div class="card-popular-pill">Рекомендовано</div>
+					<div class="buy-card-icon">🕯️</div>
+					<h3>Крафтові майстерні & SPA</h3>
+					<p>Натуральна косметика, соєві свічки ручної роботи, шкіряні портмоне та індивідуальні подарункові
+						бокси.</p>
+					<ul class="buy-features">
+						<li>✓ Авторські бренди та hand-made студії</li>
+						<li>✓ Індивідуальне гравіювання та привітання</li>
+						<li>✓ Святкове фірмове пакування</li>
+					</ul>
+					<span class="buy-tag highlight">Ексклюзив & Затишок</span>
+				</div>
+
+				<div class="buy-card">
+					<div class="buy-card-icon">💐</div>
+					<h3>Флористика & Делікатеси</h3>
+					<p>Свіжі авторські букети, солодощі ручної роботи, крафтова кава та вишукані святкові кошики.</p>
+					<ul class="buy-features">
+						<li>✓ Локальні квіткові та кондитерські крамниці</li>
+						<li>✓ Можливість доставки день у день</li>
+						<li>✓ Фотозвіт букета перед відправкою</li>
+					</ul>
+					<span class="buy-tag">Свіжість & Емоції</span>
+				</div>
+			</div>
+
+			<div class="buy-tip-box">
+				<span class="tip-icon">💡</span>
+				<div>
+					<strong>Корисна порада:</strong> Замовляйте подарунки за 2–3 дні до свята, щоб мати час на стильне
+					оформлення та уникнути передсвяткових затримок доставки!
+				</div>
+			</div>
+		</section>
+
+		<!-- 4. FAQ (Часті запитання) Секція -->
+		<section class="faq-section" id="faq">
+			<div class="section-header">
+				<span class="section-badge">❓ Запитання & Відповіді</span>
+				<h2>Поширені запитання (FAQ)</h2>
+				<p class="section-subtitle">
+					Маєте запитання щодо роботи сервісу? Ознайомтеся з найпопулярнішими відповідями нижче.
+				</p>
+			</div>
+
+			<div class="faq-list">
+				<details class="faq-item" open>
+					<summary class="faq-question">
+						<span>Як працює конструктор подарунків?</span>
+						<span class="faq-toggle-icon"></span>
+					</summary>
+					<div class="faq-answer">
+						<p>
+							Ви вказуєте отримувача (Мама, Тато, Сестра або Брат), обираєте привід (День Народження,
+							Новий Рік тощо) та задаєте суму бюджету. Сервіс миттєво генерує персоналізовану рекомендацію
+							з фотографією, описом та розрахованою орієнтовною ціною.
+						</p>
+					</div>
+				</details>
+
+				<details class="faq-item">
+					<summary class="faq-question">
+						<span>Чи можу я змінювати параметри та пробувати різні варіанти?</span>
+						<span class="faq-toggle-icon"></span>
+					</summary>
+					<div class="faq-answer">
+						<p>
+							Звісно! Ви можете експериментувати з отримувачами, подіями та сумою бюджету необмежену
+							кількість разів. Конструктор миттєво оновить рекомендацію при кожному натисканні кнопки
+							«Зібрати».
+						</p>
+					</div>
+				</details>
+
+				<details class="faq-item">
+					<summary class="faq-question">
+						<span>Чи актуальні розраховані ціни подарунків?</span>
+						<span class="faq-toggle-icon"></span>
+					</summary>
+					<div class="faq-answer">
+						<p>
+							Ціна розраховується динамічно на основі вашого вказаного бюджету та коефіцієнта відповідної
+							категорії подарунка. Це допомагає підібрати ідею, яка точно впишеться у заплановані витрати.
+						</p>
+					</div>
+				</details>
+
+				<details class="faq-item">
+					<summary class="faq-question">
+						<span>Де можна замовити обраний подарунок?</span>
+						<span class="faq-toggle-icon"></span>
+					</summary>
+					<div class="faq-answer">
+						<p>
+							Усі запропоновані набори та товари є загальнодоступними в українських онлайн-маркетплейсах,
+							крафтових майстернях та тематичних магазинах. Детальніше дивіться у секції «Де придбати»
+							вище.
+						</p>
+					</div>
+				</details>
+
+				<details class="faq-item">
+					<summary class="faq-question">
+						<span>Чи потрібно платити за користування конструктором?</span>
+						<span class="faq-toggle-icon"></span>
+					</summary>
+					<div class="faq-answer">
+						<p>
+							Ні, сервіс повністю безкоштовний, не містить прихованих платежів та не вимагає реєстрації чи
+							введення платіжних даних.
+						</p>
+					</div>
+				</details>
+			</div>
+		</section>
+	</main>
+
+	<footer>
+		<p>© 2026 Конструктор подарунків. Усі права захищено. • <a href="admin.html" class="footer-admin-link">⚙️ Панель адміністратора</a></p>
+	</footer>
+
+	<script src="script.js"></script>
+</body>
+
+</html>
